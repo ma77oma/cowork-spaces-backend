@@ -1,0 +1,114 @@
+@baseUrl = http://localhost:5254
+@spaceId = 11111111-1111-1111-1111-111111111111
+@reservationId = 00000000-0000-0000-0000-000000000000
+@token = REEMPLAZAR_TOKEN
+
+### Register user
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "fullName": "Usuario Demo",
+  "email": "usuario.demo@coworkspaces.local",
+  "password": "Test1234"
+}
+
+### Login user
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "usuario.demo@coworkspaces.local",
+  "password": "Test1234"
+}
+
+### List spaces
+GET {{baseUrl}}/api/spaces
+
+### Get space by id
+GET {{baseUrl}}/api/spaces/{{spaceId}}
+
+### Create space
+POST {{baseUrl}}/api/spaces
+Content-Type: application/json
+
+{
+  "name": "Sala Workshop",
+  "capacity": 12,
+  "baseHourlyRate": 95,
+  "openingTime": "08:00:00",
+  "closingTime": "21:00:00",
+  "status": 1
+}
+
+### Update space
+PUT {{baseUrl}}/api/spaces/{{spaceId}}
+Content-Type: application/json
+
+{
+  "name": "Sala Ejecutiva Premium",
+  "capacity": 10,
+  "baseHourlyRate": 90,
+  "openingTime": "08:00:00",
+  "closingTime": "20:00:00",
+  "status": 1
+}
+
+### Create reservation
+POST {{baseUrl}}/api/reservations
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "spaceId": "{{spaceId}}",
+  "startAt": "2026-06-15T10:00:00",
+  "endAt": "2026-06-15T12:00:00"
+}
+
+### Preview price
+POST {{baseUrl}}/api/reservations/preview-price
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "spaceId": "{{spaceId}}",
+  "startAt": "2026-06-15T10:00:00",
+  "endAt": "2026-06-15T12:00:00"
+}
+
+### Get reservation by id
+GET {{baseUrl}}/api/reservations/{{reservationId}}
+Authorization: Bearer {{token}}
+
+### Get my reservations
+GET {{baseUrl}}/api/reservations/my
+Authorization: Bearer {{token}}
+
+### Cancel reservation
+POST {{baseUrl}}/api/reservations/{{reservationId}}/cancel
+Authorization: Bearer {{token}}
+
+### Reports
+GET {{baseUrl}}/api/reports?from=2026-06-01&to=2026-06-30
+
+### Manual conflict test: request 1
+POST {{baseUrl}}/api/reservations
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "spaceId": "{{spaceId}}",
+  "startAt": "2026-06-16T15:00:00",
+  "endAt": "2026-06-16T17:00:00"
+}
+
+### Manual conflict test: request 2
+POST {{baseUrl}}/api/reservations
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "spaceId": "{{spaceId}}",
+  "startAt": "2026-06-16T15:30:00",
+  "endAt": "2026-06-16T16:30:00"
+}
