@@ -1,5 +1,6 @@
 using CoworkSpaces.Application.DTOs.Reservations;
 using CoworkSpaces.Application.Features.Reservations.Commands.CancelReservation;
+using CoworkSpaces.Application.Features.Reservations.Commands.ConfirmReservation;
 using CoworkSpaces.Application.Features.Reservations.Commands.CreateReservation;
 using CoworkSpaces.Application.Features.Reservations.Commands.PreviewReservationPrice;
 using CoworkSpaces.Application.Features.Reservations.Queries.GetReservationById;
@@ -40,6 +41,14 @@ public class ReservationsController : ControllerBase
     public async Task<ActionResult<CancelReservationResponse>> Cancel(Guid id, CancellationToken cancellationToken)
     {
         var response = await _mediator.Send(new CancelReservationCommand { ReservationId = id }, cancellationToken);
+        return Ok(response);
+    }
+
+    [HttpPost("{id:guid}/confirm")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<ReservationResponse>> Confirm(Guid id, CancellationToken cancellationToken)
+    {
+        var response = await _mediator.Send(new ConfirmReservationCommand { ReservationId = id }, cancellationToken);
         return Ok(response);
     }
 

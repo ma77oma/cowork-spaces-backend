@@ -69,6 +69,24 @@ public static class ReservationBusinessValidator
         }
     }
 
+    public static void ValidateConfirmation(Reservation reservation)
+    {
+        if (reservation.Status == ReservationStatus.Confirmed)
+        {
+            throw new BusinessException("La reserva ya fue confirmada.");
+        }
+
+        if (reservation.Status == ReservationStatus.Cancelled)
+        {
+            throw new BusinessException("Una reserva cancelada no se puede confirmar.");
+        }
+
+        if (reservation.Status == ReservationStatus.Completed)
+        {
+            throw new BusinessException("Una reserva completada no se puede confirmar.");
+        }
+    }
+
     public static void ValidateSpace(Space space)
     {
         if (string.IsNullOrWhiteSpace(space.Name))

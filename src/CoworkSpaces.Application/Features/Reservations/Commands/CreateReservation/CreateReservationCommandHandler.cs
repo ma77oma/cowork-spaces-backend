@@ -69,7 +69,7 @@ public class CreateReservationCommandHandler : IRequestHandler<CreateReservation
             CreatedByUserId = currentUserId,
             StartAt = request.StartAt,
             EndAt = request.EndAt,
-            Status = ReservationStatus.Confirmed,
+            Status = ReservationStatus.Pending,
             FinalPrice = _pricingService.CalculateFinalPrice(space.BaseHourlyRate, request.StartAt, request.EndAt, createdAt),
             CreatedAt = createdAt
         };

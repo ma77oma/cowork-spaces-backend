@@ -32,10 +32,16 @@ public class GetMyReservationsQueryHandler : IRequestHandler<GetMyReservationsQu
             throw new BusinessException("Debe iniciar sesión para consultar sus reservas.");
         }
 
-        var reservations = await _context.Reservations
+        IQueryable<Domain.Entities.Reservation> reservationsQuery = _context.Reservations
             .AsNoTracking()
-            .Include(item => item.Space)
-            .Where(reservation => reservation.CreatedByUserId == userId)
+            .Include(item => item.Space);
+
+        if (!_currentUserService.IsInRole("Admin"))
+        {
+            reservationsQuery = reservationsQuery.Where(reservation => reservation.CreatedByUserId == userId);
+        }
+
+        var reservations = await reservationsQuery
             .OrderByDescending(reservation => reservation.CreatedAt)
             .ToListAsync(cancellationToken);
 
