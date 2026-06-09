@@ -281,6 +281,20 @@ TEST_EMAIL=usuario.prueba@coworkspaces.local
 TEST_PASSWORD=Test1234
 ```
 
+Si quieres ejecutar la prueba con otro usuario, define `TEST_EMAIL` y `TEST_PASSWORD` antes de correr el script.
+
+Ejemplo en PowerShell:
+
+```powershell
+$env:NODE_TLS_REJECT_UNAUTHORIZED="0"
+$env:API_BASE_URL="https://localhost:7081"
+$env:TEST_EMAIL="otro.usuario@coworkspaces.local"
+$env:TEST_PASSWORD="Test1234"
+node scripts/concurrency-test.js
+```
+
+El script intenta primero registrar ese usuario. Si ya existe, hace login con esas mismas credenciales y reutiliza el token para las dos solicitudes concurrentes.
+
 ## Endpoints principales
 
 - `GET /api/spaces`

@@ -1,4 +1,4 @@
-const baseUrl = process.env.API_BASE_URL ?? 'http://localhost:5254';
+const baseUrl = process.env.API_BASE_URL ?? 'https://localhost:7081';
 const spaceId = process.env.SPACE_ID ?? '11111111-1111-1111-1111-111111111111';
 const email = process.env.TEST_EMAIL ?? `loadtest_${Date.now()}@coworkspaces.local`;
 const password = process.env.TEST_PASSWORD ?? 'Test1234';
@@ -16,8 +16,7 @@ const payload = {
   endAt: end.toISOString()
 };
 
-async function createReservation(label) {
-  const token = await getToken();
+async function createReservation(label, token) {
   const response = await fetch(`${baseUrl}/api/reservations`, {
     method: 'POST',
     headers: {
@@ -56,6 +55,9 @@ async function getToken() {
     return cachedToken;
   }
 
+  const registerError = await registerResponse.text();
+  console.log(`Register failed with status ${registerResponse.status}: ${registerError}`);
+
   const loginResponse = await fetch(`${baseUrl}/api/auth/login`, {
     method: 'POST',
     headers: {
@@ -65,7 +67,8 @@ async function getToken() {
   });
 
   if (!loginResponse.ok) {
-    throw new Error(`Unable to authenticate test user. Status ${loginResponse.status}`);
+    const loginError = await loginResponse.text();
+    throw new Error(`Unable to authenticate test user. Status ${loginResponse.status}. Body: ${loginError}`);
   }
 
   const loginBody = await loginResponse.json();
@@ -75,10 +78,14 @@ async function getToken() {
 
 async function main() {
   console.log('Payload:', payload);
+  console.log('API Base URL:', baseUrl);
+
+  const token = await getToken();
+  console.log('Authenticated successfully. Token acquired.');
 
   const [first, second] = await Promise.all([
-    createReservation('Request 1'),
-    createReservation('Request 2')
+    createReservation('Request 1', token),
+    createReservation('Request 2', token)
   ]);
 
   console.log(`${first.label}: ${first.status}`);
