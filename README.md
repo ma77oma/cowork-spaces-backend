@@ -86,6 +86,8 @@ Usuario admin seed inicial:
 - email: `admin@coworkspaces.local`
 - password: `Admin123`
 
+La cuenta admin no debe crearse manualmente. Se genera automaticamente durante el seed inicial si no existe en la base de datos.
+
 ## Job de completado de reservas
 
 La aplicacion ejecuta un job de Quartz cada 5 minutos para marcar como `Completed` las reservas que:
@@ -199,15 +201,23 @@ Espacios iniciales:
 
 ## Cadena de conexion
 
-Por defecto en `appsettings.json`:
+Antes de ejecutar el proyecto, actualiza la cadena de conexion con una instancia real de SQL Server disponible en tu equipo o entorno.
+
+Archivos a revisar:
+
+- `src/CoworkSpaces.Api/appsettings.json`
+- `src/CoworkSpaces.Api/appsettings.Development.json`
+- `src/CoworkSpaces.Infrastructure/Persistence/AppDbContextFactory.cs`
+
+Ejemplo de formato:
 
 ```json
 "ConnectionStrings": {
-  "DefaultConnection": "Server=DESKTOP-0U4OQF0\\SQLEXPRESS;Database=CoworkSpacesDb;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true"
+  "DefaultConnection": "Server=TU_SERVIDOR\\SQLEXPRESS;Database=CoworkSpacesDb;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true"
 }
 ```
 
-Puedes cambiarla por tu instancia de SQL Server.
+Si descargas este repositorio, no asumas que la instancia incluida en el ejemplo existe en tu maquina. Debes reemplazar `TU_SERVIDOR\\SQLEXPRESS` por tu servidor real.
 
 ## Comandos
 
@@ -223,6 +233,14 @@ dotnet restore CoworkSpaces.sln
 dotnet tool install --global dotnet-ef
 dotnet ef database update --project src/CoworkSpaces.Infrastructure --startup-project src/CoworkSpaces.Api
 ```
+
+Tambien puedes simplemente levantar la API:
+
+```bash
+dotnet run --project src/CoworkSpaces.Api
+```
+
+La aplicacion ejecuta `Database.MigrateAsync()` al iniciar, por lo que aplica automaticamente las migraciones pendientes antes de atender solicitudes. Despues de eso, se ejecuta el seed de roles, usuario admin y datos iniciales.
 
 ### Crear una nueva migracion
 
