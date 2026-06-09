@@ -1,0 +1,9 @@
+.git
+.gitignore
+.vs
+**/bin
+**/obj
+README.md
+requests
+scripts
+tests

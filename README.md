@@ -242,6 +242,47 @@ dotnet run --project src/CoworkSpaces.Api
 
 La aplicacion ejecuta `Database.MigrateAsync()` al iniciar, por lo que aplica automaticamente las migraciones pendientes antes de atender solicitudes. Despues de eso, se ejecuta el seed de roles, usuario admin y datos iniciales.
 
+### Levantar con Docker Compose
+
+El repositorio incluye `Dockerfile` y un `docker-compose.yml` funcional para levantar la API junto con SQL Server.
+
+1. Crea un archivo `.env` en la raiz del proyecto. Puedes copiar `.env.example` o usar este contenido base:
+
+```env
+MSSQL_SA_PASSWORD=YourStrong!Passw0rd
+SQLSERVER_DB=CoworkSpacesDb
+API_PORT=8080
+SQLSERVER_PORT=1433
+```
+
+2. Levanta los servicios:
+
+```bash
+docker compose up --build
+```
+
+3. Abre Swagger en:
+
+- `http://localhost:8080/swagger`
+
+4. Si cambias `API_PORT` o `SQLSERVER_PORT` en `.env`, los puertos expuestos pasan a ser:
+
+- API: `http://localhost:${API_PORT}/swagger`
+- SQL Server: `localhost,${SQLSERVER_PORT}`
+
+5. Para detener los servicios:
+
+```bash
+docker compose down
+```
+
+Detalles:
+
+- la API usa la cadena de conexion inyectada por `docker-compose.yml` mediante `ConnectionStrings__DefaultConnection`;
+- al iniciar, la API aplica migraciones automaticamente y luego ejecuta el seed inicial;
+- la redireccion HTTPS se omite dentro del contenedor para evitar redirecciones a un puerto TLS no publicado;
+- `docker compose` toma los valores desde el archivo `.env`.
+
 ### Crear una nueva migracion
 
 ```bash
